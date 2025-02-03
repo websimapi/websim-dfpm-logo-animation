@@ -1,0 +1,92 @@
+body {
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1a1a1a;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.logo-container {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.face-tracking {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.face-mesh {
+  width: 100%;
+  height: auto;
+}
+
+.grid-lines path {
+  stroke: url(#grid-gradient);
+  stroke-width: 0.5;
+  fill: none;
+}
+
+.landmarks circle {
+  fill: #00BCD4;
+  r: 1;
+}
+
+.projection-overlay {
+  fill: none;
+  stroke: #4CAF50;
+  stroke-width: 0.5;
+  stroke-dasharray: 4 2;
+  animation: scan 2s linear infinite;
+}
+
+.text {
+  color: white;
+}
+
+.text h1 {
+  font-size: 3rem;
+  margin: 0;
+  background: linear-gradient(45deg, #2196F3, #00BCD4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.text p {
+  color: #888;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+@keyframes scan {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+@keyframes glow {
+  from {
+    filter: drop-shadow(0 0 2px rgba(33,150,243,0.2));
+  }
+  to {
+    filter: drop-shadow(0 0 8px rgba(33,150,243,0.6));
+  }
+}
+
+@media (max-width: 480px) {
+  .text h1 {
+    font-size: 2rem;
+  }
+  
+  .text p {
+    font-size: 0.875rem;
+  }
+}
