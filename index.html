@@ -4,7 +4,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DFPM Live Demo</title>
   <link rel="stylesheet" href="style.css">
-  <script defer src="https://justadudewhohacks.github.io/face-api.js/face-api.min.js"></script>
+  <!-- Use the UMD build from jsDelivr to avoid module export errors -->
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js/dist/face-api.min.js"></script>
 </head>
 <body>
   <div class="logo-container">
@@ -29,7 +30,9 @@
     <div class="text">
       <h1>DFPM</h1>
       <p>Dynamic Facial Projection Mapping</p>
-      <div id="status" style="color: #888; font-size: 0.8rem; margin-top: 1rem;">Loading face detection models...</div>
+      <div id="status" style="color: #888; font-size: 0.8rem; margin-top: 1rem;">
+        Loading face detection models...
+      </div>
     </div>
   </div>
 

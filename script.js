@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     updateStatus('Loading face detection models...');
-    // Load face-api models
+    // Load face-api models using a reliable weights URL.
+    // Note: The weights are hosted on GitHub Pages to ensure availability.
     await Promise.all([
       faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights'),
       faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights')
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Set up canvas
+  // Set up canvas when video starts playing
   video.addEventListener('play', () => {
     const displaySize = { width: video.clientWidth, height: video.clientHeight };
     canvas.width = displaySize.width;
