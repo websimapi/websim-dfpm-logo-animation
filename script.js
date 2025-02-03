@@ -3,23 +3,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   const canvas = document.getElementById('overlay');
   const landmarks = document.querySelector('.landmarks');
   const gridLines = document.querySelector('.grid-lines');
+  const statusElement = document.getElementById('status');
   
-  // Load face-api models from a different source
-  await Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights'),
-    faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights')
-  ]).catch(err => {
+  // Update status
+  const updateStatus = (message) => {
+    statusElement.textContent = message;
+  };
+
+  try {
+    updateStatus('Loading face detection models...');
+    // Load face-api models
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights'),
+      faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights')
+    ]);
+    updateStatus('Models loaded successfully');
+  } catch (err) {
     console.error('Error loading models:', err);
-    document.body.innerHTML = `
-      <div style="color: white; text-align: center; padding: 20px;">
-        <h2>Error loading face detection models</h2>
-        <p>Please check your internet connection and reload the page.</p>
-      </div>
-    `;
-  });
+    updateStatus('Error loading face detection models. Please check your connection and reload.');
+    return;
+  }
 
   // Access webcam with error handling
   try {
+    updateStatus('Requesting camera access...');
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'user',
@@ -28,15 +35,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
     video.srcObject = stream;
+    updateStatus('Camera connected');
   } catch (err) {
     console.error('Error accessing camera:', err);
-    document.body.innerHTML = `
-      <div style="color: white; text-align: center; padding: 20px;">
-        <h2>Camera Access Error</h2>
-        <p>Please ensure you've granted camera permissions and reload the page.</p>
-        <p>Error: ${err.message}</p>
-      </div>
-    `;
+    updateStatus(`Camera access error: ${err.message}`);
     return;
   }
 
@@ -51,6 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Start face detection
     detectFace();
+    updateStatus('Face tracking active');
   });
 
   function generateGrid() {
@@ -96,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (err) {
       console.error('Face detection error:', err);
+      updateStatus('Face detection error - retrying...');
     }
 
     requestAnimationFrame(detectFace);
