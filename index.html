@@ -2,12 +2,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DFPM Logo Animation</title>
+  <title>DFPM Live Demo</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </head>
 <body>
   <div class="logo-container">
-    <div class="face-tracking">
+    <div class="camera-container">
+      <video id="video" class="camera-feed" autoplay muted playsinline></video>
+      <canvas id="overlay"></canvas>
+      
       <svg viewBox="0 0 200 200" class="face-mesh">
         <defs>
           <linearGradient id="grid-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -16,13 +20,8 @@
           </linearGradient>
         </defs>
         
-        <!-- Face mesh grid lines -->
         <g class="grid-lines"></g>
-        
-        <!-- Landmark points -->
         <g class="landmarks"></g>
-        
-        <!-- Projection overlay -->
         <rect class="projection-overlay" x="0" y="0" width="200" height="200"/>
       </svg>
     </div>
