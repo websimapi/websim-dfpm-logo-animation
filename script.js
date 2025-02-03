@@ -4,13 +4,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   const landmarks = document.querySelector('.landmarks');
   const gridLines = document.querySelector('.grid-lines');
   
-  // Load face-api models
+  // Load face-api models from a different source
   await Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights'),
-    faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights')
-  ]);
+    faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights'),
+    faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://justadudewhohacks.github.io/face-api.js/weights')
+  ]).catch(err => {
+    console.error('Error loading models:', err);
+    document.body.innerHTML = `
+      <div style="color: white; text-align: center; padding: 20px;">
+        <h2>Error loading face detection models</h2>
+        <p>Please check your internet connection and reload the page.</p>
+      </div>
+    `;
+  });
 
-  // Access webcam
+  // Access webcam with error handling
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
@@ -22,6 +30,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     video.srcObject = stream;
   } catch (err) {
     console.error('Error accessing camera:', err);
+    document.body.innerHTML = `
+      <div style="color: white; text-align: center; padding: 20px;">
+        <h2>Camera Access Error</h2>
+        <p>Please ensure you've granted camera permissions and reload the page.</p>
+        <p>Error: ${err.message}</p>
+      </div>
+    `;
     return;
   }
 
@@ -56,27 +71,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function detectFace() {
-    const detection = await faceapi
-      .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks(true);
+    try {
+      const detection = await faceapi
+        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks(true);
 
-    if (detection) {
-      const displaySize = { width: video.clientWidth, height: video.clientHeight };
-      const resizedDetection = faceapi.resizeResults(detection, displaySize);
-      
-      // Clear previous landmarks
-      landmarks.innerHTML = '';
-      
-      // Draw new landmarks
-      resizedDetection.landmarks.positions.forEach(point => {
-        const scaledX = (point.x / displaySize.width) * 200;
-        const scaledY = (point.y / displaySize.height) * 200;
+      if (detection) {
+        const displaySize = { width: video.clientWidth, height: video.clientHeight };
+        const resizedDetection = faceapi.resizeResults(detection, displaySize);
         
-        const landmark = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        landmark.setAttribute('cx', scaledX);
-        landmark.setAttribute('cy', scaledY);
-        landmarks.appendChild(landmark);
-      });
+        // Clear previous landmarks
+        landmarks.innerHTML = '';
+        
+        // Draw new landmarks
+        resizedDetection.landmarks.positions.forEach(point => {
+          const scaledX = (point.x / displaySize.width) * 200;
+          const scaledY = (point.y / displaySize.height) * 200;
+          
+          const landmark = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          landmark.setAttribute('cx', scaledX);
+          landmark.setAttribute('cy', scaledY);
+          landmarks.appendChild(landmark);
+        });
+      }
+    } catch (err) {
+      console.error('Face detection error:', err);
     }
 
     requestAnimationFrame(detectFace);
